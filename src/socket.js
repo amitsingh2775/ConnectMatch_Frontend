@@ -4,7 +4,6 @@ const userID = sessionStorage.getItem("userId") || `user_${Math.random().toStrin
 sessionStorage.setItem("userId", userID);
 
 const socket = io("https://connect-match-backend.vercel.app", {
-  transports: ["polling"],
   query: { userID },
   withCredentials: true,
 });
