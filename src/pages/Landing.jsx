@@ -51,19 +51,18 @@ const LandingPage = ({ onGetStarted }) => {
 
       {/* Rest of the content */}
       <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <MessageSquare className="h-8 w-8 text-blue-400" />
-            <span className="text-2xl font-bold">ConnectMatch</span>
-          </div>
-          <div className="hidden md:flex space-x-8">
-            <a href="#features" className="text-gray-300 hover:text-blue-400 transition-colors">Features</a>
-            <a href="#about" className="text-gray-300 hover:text-blue-400 transition-colors">About</a>
-            <a href="#contact" className="text-gray-300 hover:text-blue-400 transition-colors">Contact</a>
-          </div>
-        </div>
-      </nav>
-
+  <div className="flex items-center justify-between">
+    <div className="flex items-center space-x-2">
+      <img src="/lg.png" alt="Icon" className="h-8 w-8" />
+      <span className="text-2xl font-bold">ConnectMatch</span>
+    </div>
+    <div className="hidden md:flex space-x-8">
+      <a href="#features" className="text-gray-300 hover:text-blue-400 transition-colors">Features</a>
+      <a href="#about" className="text-gray-300 hover:text-blue-400 transition-colors">About</a>
+      <a href="#contact" className="text-gray-300 hover:text-blue-400 transition-colors">Contact</a>
+    </div>
+  </div>
+</nav>
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 md:py-24 text-center">
         <div className="max-w-3xl mx-auto">
