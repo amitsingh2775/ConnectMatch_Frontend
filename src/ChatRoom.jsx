@@ -17,15 +17,11 @@ const ChatRoom = ({ roomID, setRoomID }) => {
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Socket.IO and Initial Setup
   useEffect(() => {
     socket.emit("join_room", { roomID });
     const getPref = sessionStorage.getItem("preference");
     setPref(getPref);
-
-    if (!sessionStorage.getItem(`profileImage_${userId}`)) {
-      const profileImage = `https://avatar.iran.liara.run/public?user=${userId}×tamp=${Date.now()}`;
-      sessionStorage.setItem(`profileImage_${userId}`, profileImage);
-    }
 
     socket.on("receive_message", ({ sender, message, timestamp, id, reactions = {} }) => {
       const isDeletedForMe = sessionStorage.getItem(`deleted_for_me_${userId}_${id}`);
@@ -36,8 +32,6 @@ const ChatRoom = ({ roomID, setRoomID }) => {
         });
       }
     });
-
-    
 
     socket.on("room_update", (event) => {
       toast.success(event.message);
@@ -62,6 +56,7 @@ const ChatRoom = ({ roomID, setRoomID }) => {
 
     socket.on("error", ({ message }) => toast.error(message));
 
+    // Cleanup socket listeners
     return () => {
       socket.off("receive_message");
       socket.off("room_update");
@@ -72,12 +67,14 @@ const ChatRoom = ({ roomID, setRoomID }) => {
     };
   }, [roomID, userId]);
 
+  // Auto-scroll to the latest message
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+  // Send a message
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (roomID && message.trim()) {
@@ -87,6 +84,7 @@ const ChatRoom = ({ roomID, setRoomID }) => {
     }
   };
 
+  // Handle Enter key press to send message
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -94,11 +92,11 @@ const ChatRoom = ({ roomID, setRoomID }) => {
     }
   };
 
+  // Exit the chat room
   const exitHandler = () => {
     setRoomID(null);
     socket.emit("leave_room", { roomID });
     sessionStorage.removeItem("userId");
-    sessionStorage.removeItem(`profileImage_${userId}`);
     sessionStorage.removeItem("preference");
     Object.keys(sessionStorage).forEach((key) => {
       if (key.startsWith(`deleted_for_me_${userId}_`)) sessionStorage.removeItem(key);
@@ -106,9 +104,13 @@ const ChatRoom = ({ roomID, setRoomID }) => {
     setPref("");
   };
 
-  const getProfileImage = (sender) =>
-    sessionStorage.getItem(`profileImage_${sender}`) || "https://avatar.iran.liara.run/public";
+  // Generate DiceBear avatar URL
+  const getProfileImage = (sender) => {
+    const img = `https://api.dicebear.com/9.x/adventurer/svg?seed=${sender}`;
+    return img;
+  };
 
+  // Handle emoji selection
   const handleEmojiClick = (emojiObject) => {
     setMessage((prev) => prev + emojiObject.emoji);
     textareaRef.current.focus(); // Keep focus on textarea
@@ -163,6 +165,9 @@ const ChatRoom = ({ roomID, setRoomID }) => {
                       src={getProfileImage(msg.sender)}
                       alt="Profile"
                       className="w-8 h-8 rounded-full mt-1"
+                      onError={(e) => {
+                        e.target.src = "https://api.dicebear.com/9.x/initials/svg?seed=fallback"; // Fallback image
+                      }}
                     />
                   )}
                   <Message
@@ -177,11 +182,15 @@ const ChatRoom = ({ roomID, setRoomID }) => {
                       src={getProfileImage(msg.sender)}
                       alt="Profile"
                       className="w-8 h-8 rounded-full mt-1"
+                      onError={(e) => {
+                        e.target.src = "https://api.dicebear.com/9.x/initials/svg?seed=fallback"; // Fallback image
+                      }}
                     />
                   )}
                 </div>
               ))}
             </div>
+
             {/* Input Form with Emoji Picker */}
             <form onSubmit={handleSendMessage} className="mt-4 sm:mt-6 relative">
               <div className="bg-white/10 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 flex gap-2 items-center">
